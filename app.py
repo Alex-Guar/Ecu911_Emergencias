@@ -48,9 +48,9 @@ app.index_string = '''
 
 
 
-#with open('mapa_provincias.geojson', encoding='utf-8') as f:
-    #mi_geojson = json.load(f)
-#Data Frame to use
+
+
+
 
 df = pd.read_parquet('data_months.parquet')    #data base
 
