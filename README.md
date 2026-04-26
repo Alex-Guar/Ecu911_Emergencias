@@ -4,4 +4,4 @@
 
 [Demostración del Proyecto](https://huggingface.co/spaces/AlexGuar/Ecu911_Emergencias)
 
-## 🚀 Características Principales
+![texto](assets/panel.png)
