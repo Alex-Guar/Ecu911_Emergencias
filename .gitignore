@@ -1,0 +1,8 @@
+.venv/
+__pycache__/
+data.csv
+mapa_provincias.geojson
+project.py
+project_1.py
+project_2.py
+Datos_Enero
