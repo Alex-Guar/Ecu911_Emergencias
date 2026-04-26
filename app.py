@@ -46,12 +46,6 @@ app.index_string = '''
 </html>
 '''
 
-
-
-
-
-
-
 df = pd.read_parquet('data_months.parquet')    #data base
 
 df_services = (
