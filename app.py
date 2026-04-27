@@ -10,47 +10,17 @@ import json
 
 import duckdb
 
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-
 
 app =  Dash(__name__)
 
 server = app.server
 
-
-app.index_string = '''
-<!DOCTYPE html>
-<html>
-    <head>
-        {%metas%}
-        <title>{%title%}</title>
-        {%favicon%}
-        {%css%}
-    </head>
-    <body>
-        
-        {%app_entry%}
-        <div>
-        </div>
-
-           
-        
-        <footer>
-            {%config%}
-            {%scripts%}
-            {%renderer%}
-        </footer>
-        <scrip
-        
-    </body>
-</html>
-'''
-
 df = pd.read_parquet('data_months.parquet')    #data base
 
 df_services = (
             df
-            .groupby(by=['Cod_Parroquia','xcoord','ycoord','Canton','provincia','Servicio','Fecha','Parroquia'],dropna=False,observed=True)
+            .groupby(by=['Cod_Parroquia','xcoord','ycoord','Canton','provincia','Servicio','Fecha','Parroquia'],
+                     dropna=False,observed=True)
             ["total"]
             .sum()
             .unstack('Servicio',fill_value = 0)
@@ -105,7 +75,7 @@ df_top_subservices_canton  = (
                             .reset_index()
                             )
 
-#_____________data para linea de tendencia
+#data for line charts
 
 data_line_provincia = (
                                 df
@@ -135,7 +105,7 @@ data_line_parroquia = (
                         )        
 
 
-# map----------------------
+# map geo
 map_pro = gpd.read_file('map_ec_pro.geojson')
 
 mi_geojson = map_pro.__geo_interface__
@@ -155,28 +125,24 @@ slider_marks = { i : fecha.strftime('%Y-%m')
                 for i, fecha in enumerate(fechas)
                 if i % 4 == 0                  
 }
-#-------------------------------------------
 
-print("funciona")
-#This is the layout
+# layout
 app.layout = html.Div([
 
-          
-    
     html.Div(),
     
     html.H1('Reporte de Emergencias del Servicio Integrado de Seguridad de Ecuador',
         style={
-        'textAlign': 'center',       # Centrado para dar equilibrio al dashboard
-        'color': '#1a2a3a',          # Azul muy oscuro (casi negro) para legibilidad
-        'fontSize': '28px',          # Tamaño prominente pero no exagerado
-        'fontWeight': 'bold',        # Peso fuerte para jerarquía visual
+        'textAlign': 'center',       
+        'color': '#1a2a3a',          
+        'fontSize': '28px',          
+        'fontWeight': 'bold',      
         'fontFamily': '"Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-        'padding': '30px 0px',       # Espacio arriba y abajo para que respire
-        'letterSpacing': '0.5px',    # Un toque de elegancia en el espaciado de letras
-        'borderBottom': '2px solid #3498db', # Línea delgada azul SIS para conectar con los gráficos
-        'display': 'inline-block',   # Permite que la línea del borde se ajuste al texto
-        'width': '100%'              # Asegura que el centrado funcione en toda la página
+        'padding': '30px 0px',    
+        'letterSpacing': '0.5px', 
+        'borderBottom': '2px solid #3498db',
+        'display': 'inline-block',  
+        'width': '100%'              
         }),
     
     html.Div([
@@ -198,7 +164,7 @@ app.layout = html.Div([
             )],style= {'with':'60%','display':'inline-block'}),
 
         html.Div([    
-        # Selectdrodown
+        # Selectdrodown canton
             dcc.Dropdown(
                   id = 'dro-canton'
             )],
@@ -211,7 +177,7 @@ app.layout = html.Div([
                 'backgroundColor': 'white',
                 'borderRadius': '12px',
                 'padding': '25px',
-                'boxShadow': '0 4px 6px rgba(0, 0, 0, 0.05)', # Sombra muy suave
+                'boxShadow': '0 4px 6px rgba(0, 0, 0, 0.05)', 
                 'margin': '20px',
                 'border': '1px solid #f0f0f0',
                 'fontFamily': '"Segoe UI", Roboto, Helvetica, Arial, sans-serif'
@@ -220,8 +186,6 @@ app.layout = html.Div([
     ),
 
     #slider time
-    
-
     html.Div([
             dcc.Slider(
                         id = 'slider-time',
@@ -234,10 +198,7 @@ app.layout = html.Div([
                         allow_direct_input=False
                         
             )]  
-
             ),
-
-    
     
     # Graph Map   
     html.Div([
@@ -245,9 +206,6 @@ app.layout = html.Div([
             id= 'map-scatter-service',
             hoverData = {'points': [{'customdata':'Japan'}]}
         )],
-        
-        
-       # style={}
          style={'width': '51%', 'display': 'inline-block', 'padding': '0 30',
                             'backgroundColor': 'white',
                             'borderRadius': '12px',
@@ -257,20 +215,13 @@ app.layout = html.Div([
                             'border': '1px solid #f0f0f0',
                             'fontFamily': '"Segoe UI", Roboto, Helvetica, Arial, sans-serif'
                             }
-            
-               
     ),
 
     # Grap bar
-
     html.Div([
         dcc.Graph(
             id= 'bar-top-provincia',
-            
         )],
-        
-        
-        
          style={'width': '41%', 'float':'right', 'display': 'inline-block',
                 'backgroundColor': 'white',
                 'borderRadius': '1px',
@@ -291,7 +242,7 @@ app.layout = html.Div([
     ]),
 
     html.Div([dcc.Graph(id="tendencia")]),
-  ## Section Mensajes
+  ## Section Information    
     html.Section([
                 html.H2('Información',id="seccition-question",
                         style={
@@ -306,14 +257,14 @@ app.layout = html.Div([
                         html.P('''El primer recuadro permite seleccionar el tipo de servicio;
                         el segundo una provincia que activará un conjunto de opciones de para el tercer recuadro (cantón).
                         Si coloca el cursor sobre unos de los puntos del mapa, obtendrá información sobre la parroquía
-                        donde se registran eventos. El último recuadro le permite analizar la tendencia de los diferentes servicios. 
+                        donde se registranv el evento. El último recuadro le permite analizar la tendencia de los diferentes servicios. 
                         Si da doble click sobre una de opciones del panel derecho, obtendra una linea de tendencia indivual para esa 
                         opción. Además, si seguidamente da click sobre otra opción, obtendra un comparación entre las opciones selccionadas.                        
                         '''),
                         html.Li('¿Cuál es la fuente de los datos?'),
                         html.P(["Toda la información es parte del portal de ",html.Em("datosabiertos.presidencia.gob.ec")]),
                         html.Li('¿Quién es el creador de estea dashbord?'),
-                        html.P("El creador es Alexander Urgiles"),
+                        html.P("El creador es Alexander Guartan"),
                         html.Li("¿Cuál es el objetivo de este dashbord"),
                         html.P("El objetivo es brindar una manera gráfica los reportes de ECU91")],
                         style={'listStyleType': 'disc'}
@@ -357,24 +308,11 @@ def update_figmap(Mes,Province,Services):
 
     if Province is None:
         df_scatter = df_services[(df_services[Services]>0) & (df_services['Fecha'] ==tiempo)]
-       # df_chro =  df_map[ (df_map[Services]>0)]
     else :
         df_scatter = df_services[(df_services[Services]>0) 
                                 & (df_services['provincia'] == Province) 
                                 & (df_services['Fecha'] ==tiempo)]
-       # df_chro =  df_map[ (df_map[Services]>0) & (df_map['provincia'] == Province) & (df_services['Fecha'] ==tiempo)]   
 
-    #fig = px.choropleth_map(
-          #                  data_frame = df_chro,
-         #                   geojson=mi_geojson,
-        #                    locations='provincia',
-                           # color = Services,
-       #                     color_continuous_scale  = px.colors.sequential.YlGnBu,
-      #                     # animation_frame='Fecha',  
-     #                       featureidkey = "properties.DPA_DESPRO" 
-                                                     
-    
-    #)
     
     fig = px.scatter_map(df_scatter,
                         lat='ycoord',
@@ -386,20 +324,6 @@ def update_figmap(Mes,Province,Services):
                         hover_data = {"Canton": True,'Parroquia':True,'xcoord' : False,'ycoord' : False,"Fecha":False}                                           
                         )
 
-    #fig.add_traces(fig_1.data[0])
-
-   
-                        
-    #for i in range(len(fig.frames)):
-
-     #   lista_trazas = list(fig.frames[i].data)
-
-      #  lista_trazas.append(fig_1.frames[i].data[0])
-
-       # fig.frames[i].data = lista_trazas
-                
-            
-    
     fig.update_layout(
 
             map_style = "carto-positron",
@@ -493,21 +417,6 @@ def update_bar(Mes,canton,provincia,service):
         
     fig.update_layout(title = dict(text = titl_e, font = dict(size= 12)))
     
-
-    
-    
-
-
-    #fig = px.bar(
-    #        dff,
-    #        x=data_x,
-    #        y="total",
-    #        animation_frame='Fecha',
-    #        range_x = [-1,15.5],
-    #        range_y = [0,dff.total.max()],
-    #        )
-    #fig.update_layout(barmode='stack',yaxis={"categoryorder":"category ascending"})
-        
     return fig
 
 @callback(
@@ -555,25 +464,11 @@ def update_bar_sub(Mes,canton,province,service):
             range_y =  [0,-2],
             orientation = 'h',
         )
-        #fig = px.bar(
-        #    dff,
-        #    x = "Subtipo",
-        #    y = 'total',
-        #    animation_frame='Fecha',
-        #    height=980,
-        #    range_x = [-1,30],
-        #    range_y = [0,dff.total.max()],
-        #    orientation = 'v',
-            
-        #)
-
         fig.update_layout(
                      margin={"r":0,"t":30,"l":500,"b":0},
                      autosize = False
                      )
      
-        
-   
         fig.update_yaxes(type='category',
                          range=[9.5, -0.5],
                          autorange=False,
@@ -582,14 +477,11 @@ def update_bar_sub(Mes,canton,province,service):
                          automargin = False,
                          tickprefix = " ",
                          ticksuffix = "  ")
-
-        
         
         fig.update_layout(
             paper_bgcolor='white',
             plot_bgcolor='white'
         )
-
 
         if province == None:
             titl_e = "Categorías de subservicios de {} para todo el Ecuador".format(service)
@@ -600,11 +492,9 @@ def update_bar_sub(Mes,canton,province,service):
                 titl_e =  "Categorías de subservicios de {} para el cantón {} de la provincia de {}".format(service,canton,province)     
         
         fig.update_layout(title = dict(text = titl_e, font = dict(size= 12)))        
-
-
         
         return fig
-#_____________linea de tendencia----- 
+#Linea de tendencia 
 @callback(
     Output('tendencia','figure'),
     Input('dro-canton','value'),
