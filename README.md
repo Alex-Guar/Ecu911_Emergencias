@@ -12,6 +12,6 @@ Descripción: El dash permite buscar información por tipo de servicio, provinci
 
 Se puede interactuar de la siguiente manera: 
 
-![texto](assets/Options.png)
+![texto](assets/Options.gif)
 
-![texto](assets/line.png)
+![texto](assets/line.gif)
