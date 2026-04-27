@@ -264,7 +264,7 @@ app.layout = html.Div([
                         html.Li('¿Cuál es la fuente de los datos?'),
                         html.P(["Toda la información es parte del portal de ",html.Em("datosabiertos.presidencia.gob.ec")]),
                         html.Li('¿Quién es el creador de estea dashbord?'),
-                        html.P("El creador es Alexander Guartan"),
+                        html.P("El creador es Alexander Guartá"),
                         html.Li("¿Cuál es el objetivo de este dashbord"),
                         html.P("El objetivo es brindar una manera gráfica los reportes de ECU91")],
                         style={'listStyleType': 'disc'}
