@@ -10,16 +10,19 @@ import json
 
 import duckdb
 
+import polars as pl
+
 
 app =  Dash(__name__)
 
 server = app.server
 
+
+
 df = pd.read_parquet('data_months.parquet')    #data base
 
 df_services = (
-            df
-            .groupby(by=['Cod_Parroquia','xcoord','ycoord','Canton','provincia','Servicio','Fecha','Parroquia'],
+            df.groupby(by=['Cod_Parroquia','xcoord','ycoord','Canton','provincia','Servicio','Fecha','Parroquia'],
                      dropna=False,observed=True)
             ["total"]
             .sum()
