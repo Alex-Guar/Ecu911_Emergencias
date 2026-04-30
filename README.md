@@ -8,10 +8,5 @@ Descripción: El dash permite buscar información por tipo de servicio, provinci
 
 [Demostración del Proyecto](https://huggingface.co/spaces/AlexGuar/Ecu911_Emergencias)
 
-![texto](assets/panel.png)
 
-Se puede interactuar de la siguiente manera: 
 
-![texto](assets/Options.gif)
-
-![texto](assets/line.gif)
